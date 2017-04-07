@@ -18,6 +18,8 @@ class esvn(object):
             if r == '':
                 continue
             words = pattern.split(r)
+            if len(words[0]) > 1:
+                continue
             if words[0] not in fileList:
                 fileList[words[0]] = list()
             fileList[words[0]].append(words[1])
@@ -28,8 +30,10 @@ class esvn(object):
             ["svn", "up", directory], stdout=subprocess.PIPE)
         print(result.stdout.decode())
 
-    def st(self, directory=os.getcwd()):
-        print(self._getStatus(directory))
+    def st(self, tag="",directory=os.getcwd()):
+        for k,v in self._getStatus(directory).items():
+            if(k == tag or tag==""):
+                print('\n'.join(v))
 
     def ci(self, comment, directory=os.getcwd()):
         fileList = self._getStatus(directory)
@@ -40,5 +44,8 @@ class esvn(object):
         comment = 'Author: ZuoQi\nContent: ' + comment
         subprocess.run(["svn", "ci", directory, "-m", comment])
 
+    def cleanup(self,directory=os.getcwd()):
+        subprocess.run(["svn", "cleanup", "--include-externals","--remove-unversioned",directory])
+        subprocess.run(["svn", "revert", "-R",directory])
 if __name__ == '__main__':
     fire.Fire(esvn)
