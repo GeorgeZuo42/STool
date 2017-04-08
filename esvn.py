@@ -30,7 +30,7 @@ class esvn(object):
             ["svn", "up", directory], stdout=subprocess.PIPE)
         print(result.stdout.decode())
 
-    def st(self, tag="",directory=os.getcwd()):
+    def st(self, tag,directory=os.getcwd()):
         for k,v in self._getStatus(directory).items():
             if(k == tag or tag==""):
                 print('\n'.join(v))
