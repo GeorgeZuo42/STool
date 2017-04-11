@@ -38,10 +38,15 @@ class esvn(object):
     def ci(self, comment, directory=os.getcwd()):
         fileList = self._getStatus(directory)
         if '?' in fileList:
-            subprocess.run(["svn", "add", ' '.join(fileList['?'])])
+            print("Adding files :")
+            for single in fileList['?']:
+                #一次提交过多文件貌似有问题
+                subprocess.run(["svn", "add", single])
         if '!' in fileList:
-            subprocess.run(["svn", "del", ' '.join(fileList['!'])])
-        comment = 'Author: ZuoQi\nContent: ' + comment
+            print("Deleting files :")
+            for single in fileList['!']:
+                subprocess.run(["svn", "del", single])
+        comment = 'Content: ' + comment
         subprocess.run(["svn", "ci", directory, "-m", comment])
 
     def cleanup(self,directory=os.getcwd()):
