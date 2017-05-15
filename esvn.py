@@ -11,7 +11,7 @@ class esvn(object):
 
     def _getStatus(self, directory):
         result = subprocess.run(
-            ["svn", "st", directory], stdout=subprocess.PIPE)
+            ["svn", "st", "--no-ignore", directory], stdout=subprocess.PIPE)
         fileList = {}
         pattern = re.compile(r' +')
         for r in result.stdout.decode().split('\n'):
@@ -30,9 +30,9 @@ class esvn(object):
             ["svn", "up", directory], stdout=subprocess.PIPE)
         print(result.stdout.decode())
 
-    def st(self, tag,directory=os.getcwd()):
-        for k,v in self._getStatus(directory).items():
-            if(k == tag or tag==""):
+    def st(self, tag, directory=os.getcwd()):
+        for k, v in self._getStatus(directory).items():
+            if(k == tag or tag == ""):
                 print('\n'.join(v))
 
     def ci(self, comment, directory=os.getcwd()):
@@ -40,7 +40,7 @@ class esvn(object):
         if '?' in fileList:
             print("Adding files :")
             for single in fileList['?']:
-                #一次提交过多文件貌似有问题
+                # 一次提交过多文件貌似有问题
                 subprocess.run(["svn", "add", single])
         if '!' in fileList:
             print("Deleting files :")
@@ -49,8 +49,11 @@ class esvn(object):
         comment = 'Content: ' + comment
         subprocess.run(["svn", "ci", directory, "-m", comment])
 
-    def cleanup(self,directory=os.getcwd()):
-        subprocess.run(["svn", "cleanup", "--include-externals","--remove-unversioned",directory])
-        subprocess.run(["svn", "revert", "-R",directory])
+    def cleanup(self, directory=os.getcwd()):
+        subprocess.run(["svn", "cleanup", "--include-externals",
+                        "--remove-unversioned", "--remove-ignored", directory])
+        subprocess.run(["svn", "revert", "-R", directory])
+        self.up(directory)
+
 if __name__ == '__main__':
     fire.Fire(esvn)

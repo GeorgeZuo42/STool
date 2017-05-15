@@ -40,7 +40,8 @@ class esed(object):
             zFile.extract(file, zFileDir)
         zFile.close()
         os.remove(filePath)
-
+        
+    # https://github.com/OmniSharp/omnisharp-vscode/issues/1028 
     def update(self, version="1.8.1", directory=os.getcwd()):
         targetdir = '/Users/HSH/.vscode/extensions/ms-vscode.csharp-%s' % version
         update_list = os.listdir(directory)
@@ -68,6 +69,6 @@ class esed(object):
                             subprocess.run(["chmod", "755", file])
         subprocess.run(["touch",os.path.join(targetdir,"install.Lock")])            
         print("success")
-
+        #defaults read ~/Library/Preferences/com.unity3d.UnityEditor5.x.plist | grep RecentlyUsedProjectPaths
 if __name__ == '__main__':
     fire.Fire(esed)
